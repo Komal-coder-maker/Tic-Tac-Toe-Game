@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>Tic Tac Toe - Pro</title>
+    <style>
+        * {
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+            box-sizing: border-box;
+        }
+
+        body {
+            background: #f4f7f6;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-family: 'Segoe UI', system-ui, sans-serif;
+            margin: 0;
+            padding: 20px;
+        }
+
+        /* Name Entry Screen */
+        .name-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: white;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .name-card {
+            background: white;
+            border-radius: 24px;
+            padding: 35px;
+            width: 90%;
+            max-width: 400px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            text-align: center;
+        }
+
+        .input-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+        .input-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: 900;
+            color: #444;
+        }
+
+        .input-group input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #ddd;
+            border-radius: 12px;
+            font-size: 16px;
+        }
+
+        .start-btn {
+            background: #007aff;
+            color: white;
+            border: none;
+            width: 100%;
+            padding: 14px;
+            border-radius: 12px;
+            font-size: 18px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+        }
+
+        /* ENGLISH NOTE LINE */
+        .note-text {
+            font-size: 17px;
+            color:black;
+            margin-top: 15px;
+            line-height: 1.5;
+            font-weight: 800;
+        }
+
+        /* Game Container */
+        .game-container {
+            max-width: 400px;
+            width: 100%;
+            display: none;
+        }
+
+        .game-card {
+            background: white;
+            border-radius: 28px;
+            padding: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+
+        .mode-bar {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ddd;
+            background: #f8f9fa;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .mode-btn.active {
+            background: #007aff;
+            color: white;
+            border-color: #007aff;
+        }
+
+        .scoreboard {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .score-card {
+            flex: 1;
+            background: #f8f9fa;
+            border-radius: 16px;
+            padding: 10px;
+            text-align: center;
+        }
+
+        .player-score {
+            font-size: 32px;
+            font-weight: bold;
+        }
+
+        /* BOARD & WINNING LINE */
+        .board {
+            position: relative;
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+            background: #eee;
+            padding: 12px;
+            border-radius: 20px;
+        }
+
+        .cell {
+            aspect-ratio: 1;
+            background: white;
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            z-index: 2;
+        }
+
+        .cell.X { color: #007aff; }
+        .cell.O { color: #ff3b30; }
+
+        .win-line {
+            position: absolute;
+            background: #ff3b30;
+            border-radius: 10px;
+            z-index: 5;
+            pointer-events: none;
+            box-shadow: 0 0 8px rgba(255, 59, 48, 0.4);
+        }
+
+        .turn-text {
+            text-align: center;
+            padding: 15px;
+            font-weight: 600;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+        }
+
+        .action-btn {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            border-radius: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            background: #e9e9eb;
+        }
+
+        .reset-btn { background: #ff3b30; color: white; }
+    </style>
+</head>
+<body>
+
+<div class="name-screen" id="nameScreen">
+    <div class="name-card">
+        <h1>✖️ Tic Tac Toe 🅾️</h1>
+        <div class="input-group">
+            <label>Player 1 (X)</label>
+            <input type="text" id="p1Input" placeholder="Enter Name">
+        </div>
+        <div class="input-group">
+            <label>Player 2 (O)</label>
+            <input type="text" id="p2Input" placeholder="Enter Name">
+        </div>
+        
+        <button class="start-btn" id="startBtn">Start Game</button>
+        
+        <p class="note-text">
+            <b>Note:</b> If you are playing alone, the <b>AI</b> will play as Player 2. Select the mode to begin.
+        </p>
+    </div>
+</div>
+
+<div class="game-container" id="gameContainer">
+    <div class="game-card">
+        <div class="mode-bar">
+            <button class="mode-btn active" id="singleMode">1 Player</button>
+            <button class="mode-btn" id="doubleMode">2 Players</button>
+        </div>
+
+        <div class="scoreboard">
+            <div class="score-card">
+                <div id="p1NameLabel" style="font-size: 12px;">Player 1</div>
+                <div class="player-score" id="score1">0</div>
+            </div>
+            <div class="score-card">
+                <div id="p2NameLabel" style="font-size: 12px;">Player 2</div>
+                <div class="player-score" id="score2">0</div>
+            </div>
+        </div>
+
+        <div class="board" id="board"></div>
+
+        <div class="turn-text" id="turnText">X's Turn</div>
+
+        <div class="action-buttons">
+            <button class="action-btn" id="newGame">New Round</button>
+            <button class="action-btn reset-btn" id="resetScore">Reset Score</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let player1 = { name: "Player 1", score: 0 };
+    let player2 = { name: "Player 2", score: 0 };
+    let mode = "single";
+    let board = ["", "", "", "", "", "", "", "", ""];
+    let current = "X";
+    let active = true;
+
+    const boardDiv = document.getElementById("board");
+    const turnText = document.getElementById("turnText");
+
+    const wins = [
+        { indices: [0, 1, 2], type: 'h', pos: 0 },
+        { indices: [3, 4, 5], type: 'h', pos: 1 },
+        { indices: [6, 7, 8], type: 'h', pos: 2 },
+        { indices: [0, 3, 6], type: 'v', pos: 0 },
+        { indices: [1, 4, 7], type: 'v', pos: 1 },
+        { indices: [2, 5, 8], type: 'v', pos: 2 },
+        { indices: [0, 4, 8], type: 'd', dir: 'main' },
+        { indices: [2, 4, 6], type: 'd', dir: 'anti' }
+    ];
+
+    function drawLine(pattern) {
+        const line = document.createElement("div");
+        line.className = "win-line";
+        
+        if (pattern.type === 'h') {
+            line.style.width = "90%";
+            line.style.height = "6px";
+            line.style.top = `calc(${(pattern.pos * 33.33) + 16.66}% - 3px)`;
+            line.style.left = "5%";
+        } else if (pattern.type === 'v') {
+            line.style.width = "6px";
+            line.style.height = "90%";
+            line.style.left = `calc(${(pattern.pos * 33.33) + 16.66}% - 3px)`;
+            line.style.top = "5%";
+        } else {
+            line.style.width = "120%";
+            line.style.height = "6px";
+            line.style.top = "50%";
+            line.style.left = "-10%";
+            line.style.transform = `rotate(${pattern.dir === 'main' ? '45deg' : '-45deg'})`;
+        }
+        boardDiv.appendChild(line);
+    }
+
+    function renderBoard() {
+        boardDiv.innerHTML = "";
+        board.forEach((val, i) => {
+            const cell = document.createElement("div");
+            cell.className = `cell ${val}`;
+            cell.textContent = val;
+            cell.onclick = () => {
+                if (active && board[i] === "" && !(mode === "single" && current === "O")) {
+                    makeMove(i);
+                }
+            };
+            boardDiv.appendChild(cell);
+        });
+    }
+
+    function makeMove(i) {
+        board[i] = current;
+        renderBoard();
+        
+        const win = checkWin();
+        if (win) {
+            active = false;
+            drawLine(win.pattern);
+            if (current === "X") player1.score++; else player2.score++;
+            updateUI();
+            const winnerName = current === "X" ? player1.name : (mode === "single" ? "AI" : player2.name);
+            turnText.innerText = `${winnerName} Wins! `;
+            return;
+        }
+
+        if (!board.includes("")) {
+            active = false;
+            turnText.innerText = "Draw! 🤝";
+            return;
+        }
+
+        current = current === "X" ? "O" : "X";
+        updateTurn();
+
+        if (mode === "single" && current === "O" && active) {
+            setTimeout(aiMove, 600);
+        }
+    }
+
+    function aiMove() {
+        const empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+        const random = empty[Math.floor(Math.random() * empty.length)];
+        makeMove(random);
+    }
+
+    function checkWin() {
+        for (let w of wins) {
+            const [a, b, c] = w.indices;
+            if (board[a] && board[a] === board[b] && board[a] === board[c]) return { symbol: board[a], pattern: w };
+        }
+        return null;
+    }
+
+    function updateTurn() {
+        const name = current === "X" ? player1.name : (mode === "single" ? "AI" : player2.name);
+        turnText.innerText = `${name}'s Turn (${current})`;
+    }
+
+    function updateUI() {
+        document.getElementById("score1").innerText = player1.score;
+        document.getElementById("score2").innerText = player2.score;
+    }
+
+    function resetRound() {
+        board = ["", "", "", "", "", "", "", "", ""];
+        current = "X";
+        active = true;
+        renderBoard();
+        updateTurn();
+    }
+
+    document.getElementById("startBtn").onclick = () => {
+        player1.name = document.getElementById("p1Input").value || "Player 1";
+        player2.name = document.getElementById("p2Input").value || "Player 2";
+        document.getElementById("p1NameLabel").innerText = player1.name;
+        document.getElementById("p2NameLabel").innerText = mode === "single" ? "AI" : player2.name;
+        document.getElementById("nameScreen").style.display = "none";
+        document.getElementById("gameContainer").style.display = "block";
+        resetRound();
+    };
+
+    document.getElementById("singleMode").onclick = function() {
+        mode = "single";
+        this.classList.add("active");
+        document.getElementById("doubleMode").classList.remove("active");
+        document.getElementById("p2NameLabel").innerText = "AI";
+        resetRound();
+    };
+
+    document.getElementById("doubleMode").onclick = function() {
+        mode = "double";
+        this.classList.add("active");
+        document.getElementById("singleMode").classList.remove("active");
+        document.getElementById("p2NameLabel").innerText = player2.name;
+        resetRound();
+    };
+
+    document.getElementById("newGame").onclick = resetRound;
+    document.getElementById("resetScore").onclick = () => {
+        player1.score = 0; player2.score = 0; updateUI(); resetRound();
+    };
+
+    renderBoard();
+</script>
+</body>
+</html>

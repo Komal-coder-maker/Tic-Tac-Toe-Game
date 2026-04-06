@@ -1,6 +1,6 @@
 // Har baar jab aap bada change karein, v2 ko v3 kar sakti hain, 
 // lekin skipWaiting ki wajah se ab ye auto-update hoga.
-const CACHE_NAME = 'tictactoe-v2'; 
+const CACHE_NAME = 'tictactoe-v3'; 
 const assets = [
   './',
   './index.html',

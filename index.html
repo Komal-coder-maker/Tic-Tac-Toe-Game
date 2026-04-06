@@ -3,444 +3,179 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
-    <title>Tic Tac Toe - Compact Pro</title>
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#6366f1">
+    <title>Tic Tac Toe - Pro</title>
     <style>
-        * {
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            box-sizing: border-box;
+        :root {
+            --primary: #6366f1; --secondary: #a855f7; --bg: #0f172a;
+            --card-bg: rgba(255, 255, 255, 0.05); --text-main: #f8fafc;
+            --x-color: #38bdf8; --o-color: #fb7185;
         }
-
-        body {
-            background: #f0f2f5;
-            min-height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-family: 'Segoe UI', system-ui, sans-serif;
-            margin: 0;
-            padding: 15px;
-        }
-
-        /* Name Entry Screen */
-        .name-screen {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: white;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .name-card {
-            background: white;
-            border-radius: 20px;
-            padding: 25px;
-            width: 100%;
-            max-width: 350px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.08);
-            text-align: center;
-        }
-
-        .input-group {
-            margin-bottom: 12px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 4px;
-            font-weight: 800;
-            font-size: 13px;
-            color: black;
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 10px;
-            border: 1.5px solid #eee;
-            border-radius: 10px;
-            font-size: 15px;
-            outline: none;
-        }
-
-        .start-btn {
-            background: rgb(5, 102, 141);
-            color: white;
-            border: none;
-            width: 100%;
-            padding: 12px;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 5px;
-        }
-
-        /* Game Container */
-        .game-container {
-            width: 100%;
-            max-width: 360px;
-            display: none;
-        }
-
-        .game-card {
-            background: white;
-            border-radius: 24px;
-            padding: 20px;
-            box-shadow: 0 12px 40px rgba(0,0,0,0.1);
-            position: relative;
-        }
-
-        .back-btn {
-            display: inline-flex;
-            align-items: center;
-            gap: 5px;
-            background: skyblue;
-            border: none;
-            padding: 6px 12px;
-            border-radius: 8px;
-            color: black;
-            font-size: 11px;
-            font-weight: 800;
-            cursor: pointer;
-            margin-bottom: 15px;
-            transition: 0.2s ease;
-        }
-
-        .back-btn:hover {
-            background: #16aac4;
-            color: white;
-            transform: scale(1.05);
-        }
-
-        .mode-bar {
-            display: flex;
-            gap: 8px;
-            margin-bottom: 15px;
-        }
-
-        .mode-btn {
-            flex: 1;
-            padding: 8px;
-            border: 1px solid #eee;
-            background: #fdfdfd;
-            border-radius: 8px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-        }
-
-        .mode-btn.active {
-            background: #007aff;
-            color: white;
-            border-color: #007aff;
-        }
-
-        .scoreboard {
-            display: flex;
-            gap: 10px;
-            margin-bottom: 15px;
-        }
-
-        .score-card {
-            flex: 1;
-            background: #f8f9fa;
-            border-radius: 12px;
-            padding: 8px;
-            text-align: center;
-            border: 1px solid #f0f0f0;
-        }
-
-        .player-label {
-            font-size: 9px;
-            font-weight: 900;
-            color: black;
-            letter-spacing: 0.5px;
-            margin-bottom: 2px;
-        }
-
-        .player-score {
-            font-size: 24px;
-            font-weight: 800;
-        }
-
-        /* BOARD */
-        .board {
-            position: relative;
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 8px;
-            background: #f0f0f0;
-            padding: 10px;
-            border-radius: 15px;
-            margin-bottom: 10px;
-        }
-
-        .cell {
-            aspect-ratio: 1;
-            background: white;
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 32px;
-            font-weight: 800;
-            cursor: pointer;
-            z-index: 2;
-        }
-
-        .cell.X { color: #007aff; }
-        .cell.O { color: #ff3b30; }
-
-        .win-line {
-            position: absolute;
-            background: black; 
-            border-radius: 10px;
-            z-index: 5;
-            pointer-events: none;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
-        }
-
-        .turn-text {
-            text-align: center;
-            padding: 10px;
-            font-weight: 800;
-            font-size: 15px;
-            color: #444;
-            min-height: 40px;
-        }
-
-        .symbol-x { color: #007aff; }
-        .symbol-o { color: #ff3b30; }
-
-        .action-buttons {
-            display: flex;
-            gap: 8px;
-            margin-top: 5px;
-        }
-
-        .action-btn {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 10px;
-            font-weight: 700;
-            font-size: 13px;
-            cursor: pointer;
-            background: #e9e9eb;
-        }
-
-        .reset-btn { background: #ff3b30; color: white; }
+        * { user-select: none; -webkit-tap-highlight-color: transparent; box-sizing: border-box; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { background: radial-gradient(circle at top left, #1e293b, #0f172a); min-height: 100vh; display: flex; justify-content: center; align-items: center; font-family: sans-serif; margin: 0; padding: 20px; color: var(--text-main); }
+        .glass-card { background: var(--card-bg); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 28px; box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5); padding: 25px; width: 100%; max-width: 400px; position: relative; }
+        .name-screen { position: fixed; inset: 0; background: var(--bg); display: flex; justify-content: center; align-items: center; z-index: 1000; }
+        .input-group { margin-bottom: 20px; text-align: left; }
+        .input-group label { display: block; margin-bottom: 8px; font-size: 14px; color: #94a3b8; }
+        .input-group input { width: 100%; padding: 14px; background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; color: white; outline: none; }
+        .start-btn { background: linear-gradient(135deg, var(--primary), var(--secondary)); color: white; border: none; width: 100%; padding: 16px; border-radius: 14px; font-weight: 700; cursor: pointer; }
+        .back-btn { background: rgba(255, 255, 255, 0.1); border: none; padding: 8px 16px; border-radius: 10px; color: #cbd5e1; font-size: 12px; cursor: pointer; margin-bottom: 15px; }
+        .mode-bar { display: flex; gap: 10px; margin-bottom: 20px; background: rgba(0,0,0,0.2); padding: 5px; border-radius: 14px; }
+        .mode-btn { flex: 1; padding: 10px; border: none; background: transparent; color: #94a3b8; border-radius: 10px; font-weight: 600; cursor: pointer; }
+        .mode-btn.active { background: var(--primary); color: white; }
+        .scoreboard { display: flex; gap: 15px; margin-bottom: 20px; }
+        .score-card { flex: 1; background: rgba(255, 255, 255, 0.03); border-radius: 18px; padding: 12px; text-align: center; border: 1px solid rgba(255, 255, 255, 0.05); }
+        .board { position: relative; display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; background: rgba(0, 0, 0, 0.2); padding: 12px; border-radius: 20px; margin-bottom: 20px; }
+        .cell { aspect-ratio: 1; background: rgba(255, 255, 255, 0.05); border-radius: 14px; display: flex; align-items: center; justify-content: center; font-size: 40px; font-weight: 800; cursor: pointer; z-index: 2; }
+        .cell.X { color: var(--x-color); } .cell.O { color: var(--o-color); }
+        .win-line { position: absolute; background: white; border-radius: 10px; z-index: 5; pointer-events: none; box-shadow: 0 0 15px white; transform-origin: 0 50%; height: 6px; }
+        .turn-text { text-align: center; height: 50px; font-weight: 700; color: #fff; }
+        .action-buttons { display: flex; gap: 12px; margin-bottom: 20px; }
+        .action-btn { flex: 1; padding: 14px; border: none; border-radius: 14px; font-weight: 700; cursor: pointer; background: rgba(255, 255, 255, 0.1); color: white; }
+        .note { font-size: 11px; color: #64748b; text-align: center; line-height: 1.5; background: rgba(0,0,0,0.1); padding: 10px; border-radius: 12px; }
     </style>
 </head>
 <body>
 
 <div class="name-screen" id="nameScreen">
-    <div class="name-card">
-        <h2 style="margin-bottom: 20px;">✖️ Tic Tac Toe 🅾️</h2>
-        <div class="input-group">
-            <label>Player 1 (X)</label>
-            <input type="text" id="p1Input" placeholder="Name">
-        </div>
-        <div class="input-group">
-            <label>Player 2 (O)</label>
-            <input type="text" id="p2Input" placeholder="Name">
-        </div>
-        <button class="start-btn" id="startBtn">START GAME</button>
-        <p style="font-size: 14px; color: black; margin-top: 15px; font-weight: 900;">Note: Playing alone? AI will be Player 2.</p>
+    <div class="glass-card">
+        <h1 style="text-align:center">Tic Tac Toe</h1>
+        <div class="input-group"><label>Player 1 (X)</label><input type="text" id="p1Input" placeholder="Enter Name"></div>
+        <div class="input-group"><label>Player 2 (O)</label><input type="text" id="p2Input" placeholder="Enter Name"></div>
+        <button class="start-btn" id="startBtn">START BATTLE</button>
     </div>
 </div>
 
-<div class="game-container" id="gameContainer">
-    <div class="game-card">
-        <button class="back-btn" id="backBtn">← Back To Change Name</button>
-
-        <div class="mode-bar">
-            <button class="mode-btn active" id="singleMode">1 Player</button>
-            <button class="mode-btn" id="doubleMode">2 Players</button>
-        </div>
-
-        <div class="scoreboard">
-            <div class="score-card">
-                <div id="p1NameLabel" class="player-label">PLAYER 1</div>
-                <div class="player-score" id="score1">0</div>
-            </div>
-            <div class="score-card">
-                <div id="p2NameLabel" class="player-label">PLAYER 2</div>
-                <div class="player-score" id="score2">0</div>
-            </div>
-        </div>
-
-        <div class="board" id="board"></div>
-
-        <div class="turn-text" id="turnText"></div>
-
-        <div class="action-buttons">
-            <button class="action-btn" id="newGame">NEXT ROUND</button>
-            <button class="action-btn reset-btn" id="resetScore">RESET</button>
-        </div>
+<div class="glass-card" id="gameContainer" style="display:none">
+    <button class="back-btn" id="backBtn">← BACK</button>
+    <div class="mode-bar">
+        <button class="mode-btn active" id="singleMode">Solo (AI)</button>
+        <button class="mode-btn" id="doubleMode">Duo (Friends)</button>
+    </div>
+    <div class="scoreboard">
+        <div class="score-card"><div id="dispP1">P1</div><div id="score1" style="font-size:24px">0</div></div>
+        <div class="score-card"><div id="dispP2">P2</div><div id="score2" style="font-size:24px">0</div></div>
+    </div>
+    <div class="board" id="board"></div>
+    <div class="turn-text" id="turnText"></div>
+    <div class="action-buttons">
+        <button class="action-btn" id="nextBtn">NEXT ROUND</button>
+        <button class="action-btn" id="resetBtn" style="color:var(--o-color)">RESET ALL</button>
+    </div>
+    <div class="note">
+        <b>NOTE:</b> In Solo mode, AI will play as O. In Duo mode, both players take turns. Win line bug and false win are fixed.
     </div>
 </div>
 
 <script>
-    let player1 = { name: "Player 1", score: 0 };
-    let player2 = { name: "Player 2", score: 0 };
-    let mode = "single";
-    let board = ["", "", "", "", "", "", "", "", ""];
-    let current = "X";
-    let active = true;
+    let p1 = { name: "Player 1", score: 0 }, p2 = { name: "Player 2", score: 0 };
+    let board = ["","","","","","","","",""], current = "X", active = true, mode = "single";
 
-    const boardDiv = document.getElementById("board");
-    const turnText = document.getElementById("turnText");
-
-    const wins = [
-        { indices: [0, 1, 2], type: 'h', pos: 0 },
-        { indices: [3, 4, 5], type: 'h', pos: 1 },
-        { indices: [6, 7, 8], type: 'h', pos: 2 },
-        { indices: [0, 3, 6], type: 'v', pos: 0 },
-        { indices: [1, 4, 7], type: 'v', pos: 1 },
-        { indices: [2, 5, 8], type: 'v', pos: 2 },
-        { indices: [0, 4, 8], type: 'd', dir: 'main' },
-        { indices: [2, 4, 6], type: 'd', dir: 'anti' }
-    ];
-
-    function drawLine(pattern) {
-        const line = document.createElement("div");
-        line.className = "win-line";
-        const thickness = 6;
-        if (pattern.type === 'h') {
-            line.style.width = "90%";
-            line.style.height = `${thickness}px`;
-            line.style.top = `calc(${(pattern.pos * 33.33) + 16.66}% - ${thickness/2}px)`;
-            line.style.left = "5%";
-        } else if (pattern.type === 'v') {
-            line.style.width = `${thickness}px`;
-            line.style.height = "90%";
-            line.style.left = `calc(${(pattern.pos * 33.33) + 16.66}% - ${thickness/2}px)`;
-            line.style.top = "5%";
-        } else if (pattern.type === 'd') {
-            line.style.width = "110%";
-            line.style.height = `${thickness}px`;
-            line.style.top = "50%";
-            line.style.left = "-5%";
-            line.style.transform = `translateY(-50%) rotate(${pattern.dir === 'main' ? '45deg' : '-45deg'})`;
-        }
-        boardDiv.appendChild(line);
-    }
-
-    function renderBoard() {
-        boardDiv.innerHTML = "";
-        board.forEach((val, i) => {
-            const cell = document.createElement("div");
-            cell.className = `cell ${val}`;
-            cell.textContent = val;
-            cell.onclick = () => {
-                if (active && board[i] === "" && !(mode === "single" && current === "O")) {
-                    makeMove(i);
-                }
-            };
-            boardDiv.appendChild(cell);
-        });
-    }
-
-    function makeMove(i) {
-        board[i] = current;
-        renderBoard();
-        const win = checkWin();
-        if (win) {
-            active = false;
-            drawLine(win.pattern);
-            if (current === "X") player1.score++; else player2.score++;
-            updateUI();
-            const winnerName = current === "X" ? player1.name : (mode === "single" ? "AI" : player2.name);
-            turnText.innerHTML = `${winnerName.toUpperCase()} <span class="symbol-${current.toLowerCase()}">(${current})</span> WINS! 🎉`;
-            return;
-        }
-        if (!board.includes("")) {
-            active = false;
-            turnText.innerText = "DRAW! 🤝";
-            return;
-        }
-        current = current === "X" ? "O" : "X";
-        updateTurn();
-        if (mode === "single" && current === "O" && active) setTimeout(aiMove, 600);
-    }
-
-    function aiMove() {
-        const empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
-        const random = empty[Math.floor(Math.random() * empty.length)];
-        if (random !== undefined) makeMove(random);
-    }
+    const wins = [[0,1,2],[3,4,5],[6,7,8],[0,3,6],[1,4,7],[2,5,8],[0,4,8],[2,4,6]];
 
     function checkWin() {
-        for (let w of wins) {
-            const [a, b, c] = w.indices;
-            if (board[a] && board[a] === board[b] && board[a] === board[c]) return { symbol: board[a], pattern: w };
+        for (let combo of wins) {
+            const [a, b, c] = combo;
+            if (board[a] !== "" && board[a] === board[b] && board[a] === board[c]) return combo;
         }
         return null;
     }
 
-    function updateTurn() {
-        const name = current === "X" ? player1.name : (mode === "single" ? "AI" : player2.name);
-        // Added symbol in bracket with color coding
-        turnText.innerHTML = `${name.toUpperCase()} <span class="symbol-${current.toLowerCase()}">(${current})</span>'S TURN`;
+    function drawLine(indices) {
+        const cells = document.querySelectorAll(".cell");
+        const bRect = document.getElementById("board").getBoundingClientRect();
+        const s = cells[indices[0]].getBoundingClientRect();
+        const e = cells[indices[2]].getBoundingClientRect();
+        const x1 = s.left + s.width/2 - bRect.left, y1 = s.top + s.height/2 - bRect.top;
+        const x2 = e.left + e.width/2 - bRect.left, y2 = e.top + e.height/2 - bRect.top;
+        const line = document.createElement("div");
+        line.className = "win-line";
+        line.style.width = Math.sqrt(Math.pow(x2-x1,2) + Math.pow(y2-y1,2)) + "px";
+        line.style.left = x1 + "px"; line.style.top = y1 + "px";
+        line.style.transform = `rotate(${Math.atan2(y2-y1, x2-x1)*180/Math.PI}deg)`;
+        document.getElementById("board").appendChild(line);
     }
 
-    function updateUI() {
-        document.getElementById("score1").innerText = player1.score;
-        document.getElementById("score2").innerText = player2.score;
+    function render() {
+        const bDiv = document.getElementById("board");
+        const line = bDiv.querySelector(".win-line");
+        bDiv.innerHTML = ""; if(line) bDiv.appendChild(line);
+        board.forEach((v, i) => {
+            const c = document.createElement("div");
+            c.className = `cell ${v}`; c.textContent = v;
+            c.onclick = () => { if(active && board[i]==="" && !(mode==="single" && current==="O")) handleMove(i); };
+            bDiv.appendChild(c);
+        });
     }
 
-    function resetRound() {
-        board = ["", "", "", "", "", "", "", "", ""];
-        current = "X";
-        active = true;
-        renderBoard();
-        updateTurn();
+    function handleMove(i) {
+        board[i] = current; render();
+        const w = checkWin();
+        if(w) {
+            active = false; drawLine(w);
+            let winnerName = "";
+            if(current === "X") { p1.score++; winnerName = p1.name; }
+            else { p2.score++; winnerName = (mode === "single" ? "AI" : p2.name); }
+            document.getElementById("score1").innerText = p1.score;
+            document.getElementById("score2").innerText = p2.score;
+            document.getElementById("turnText").innerHTML = `<span style="color:#4ade80">${winnerName.toUpperCase()} WINS!</span>`;
+            return;
+        }
+        if(!board.includes("")) { active = false; document.getElementById("turnText").innerText = "IT'S A DRAW!"; return; }
+        current = current === "X" ? "O" : "X";
+        updateTurnDisplay();
+        if(mode === "single" && current === "O") setTimeout(ai, 600);
+    }
+
+    function updateTurnDisplay() {
+        let nameToDisp = (current === "X") ? p1.name : (mode === "single" ? "AI" : p2.name);
+        document.getElementById("turnText").innerText = `${nameToDisp.toUpperCase()}'S TURN`;
+    }
+
+    function ai() {
+        const empty = board.map((v, i) => v === "" ? i : null).filter(v => v !== null);
+        if(empty.length > 0) handleMove(empty[Math.floor(Math.random() * empty.length)]);
+    }
+
+    function resetGame() {
+        board = ["","","","","","","","",""]; current = "X"; active = true;
+        const oldLine = document.querySelector(".win-line");
+        if (oldLine) oldLine.remove();
+        updateTurnDisplay();
+        render();
     }
 
     document.getElementById("startBtn").onclick = () => {
-        player1.name = document.getElementById("p1Input").value || "Player 1";
-        player2.name = document.getElementById("p2Input").value || "Player 2";
-        document.getElementById("p1NameLabel").innerText = player1.name.toUpperCase();
-        document.getElementById("p2NameLabel").innerText = mode === "single" ? "AI" : player2.name.toUpperCase();
+        p1.name = document.getElementById("p1Input").value || "Player 1";
+        p2.name = document.getElementById("p2Input").value || "Player 2";
+        document.getElementById("dispP1").innerText = p1.name;
+        document.getElementById("dispP2").innerText = (mode === "single" ? "AI" : p2.name);
         document.getElementById("nameScreen").style.display = "none";
         document.getElementById("gameContainer").style.display = "block";
-        resetRound();
+        resetGame();
     };
 
-    document.getElementById("backBtn").onclick = () => {
-        document.getElementById("nameScreen").style.display = "flex";
-        document.getElementById("gameContainer").style.display = "none";
-    };
-
-    document.getElementById("singleMode").onclick = function() {
-        mode = "single";
-        this.classList.add("active");
+    document.getElementById("backBtn").onclick = () => { document.getElementById("nameScreen").style.display = "flex"; document.getElementById("gameContainer").style.display = "none"; };
+    
+    document.getElementById("singleMode").onclick = function() { 
+        mode="single"; this.classList.add("active"); 
         document.getElementById("doubleMode").classList.remove("active");
-        document.getElementById("p2NameLabel").innerText = "AI";
-        resetRound();
+        document.getElementById("dispP2").innerText = "AI";
+        resetGame(); 
     };
-
-    document.getElementById("doubleMode").onclick = function() {
-        mode = "double";
-        this.classList.add("active");
+    
+    document.getElementById("doubleMode").onclick = function() { 
+        mode="double"; this.classList.add("active"); 
         document.getElementById("singleMode").classList.remove("active");
-        document.getElementById("p2NameLabel").innerText = player2.name.toUpperCase();
-        resetRound();
+        document.getElementById("dispP2").innerText = p2.name;
+        resetGame(); 
     };
 
-    document.getElementById("newGame").onclick = resetRound;
-    document.getElementById("resetScore").onclick = () => {
-        player1.score = 0; player2.score = 0; updateUI(); resetRound();
-    };
+    document.getElementById("nextBtn").onclick = resetGame;
+    document.getElementById("resetBtn").onclick = () => { p1.score=0; p2.score=0; document.getElementById("score1").innerText=0; document.getElementById("score2").innerText=0; resetGame(); };
 
-    resetRound();
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('service-worker.js'); }
 </script>
 </body>
 </html>
